@@ -133,7 +133,7 @@ st.write("Upload your `glossary.csv`, enter your Gemini API Key, and let Gemini 
 
 # Поле для ввода API ключа
 api_key_input = st.text_input("Gemini API Key", type="password", placeholder="AIzaSy...")
-model_input = st.text_input("Gemini Model Name", value="gemini-2.5-flash")
+model_input = st.text_input("Gemini Model Name", value="gemini-3-flash-preview")
 
 uploaded_file = st.file_uploader("Upload glossary.csv", type=["csv"])
 
