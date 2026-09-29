@@ -66,7 +66,7 @@ def fix_name_with_gemini(client, model_name, chinese_text, current_russian):
         st.error(f"Ошибка Gemini для имени '{chinese_text}': {e}")
     return current_russian
 
-def process_glossary_file(input_file_path, output_file_path, api_key, project_id, model_name, status_container):
+def process_glossary_file(input_file_path, output_file_path, project_id, model_name, status_container):
     try:
         client = genai.Client(
             vertexai=True,
@@ -128,19 +128,16 @@ def process_glossary_file(input_file_path, output_file_path, api_key, project_id
 # =====================================================
 
 st.title("🇨🇳🇷🇺 Palladius Glossary Name Corrector")
-st.write("Upload your `glossary.csv`, configure your Google project details, and let Gemini review and correct character names strictly according to the official Palladius rules[cite: 5].")
+st.write("Upload your `glossary.csv`, configure your Vertex AI project details, and let Gemini review and correct character names strictly according to the official Palladius rules[cite: 5].")
 
-project_id_input = st.text_input("Google Project ID", value="project-d378ee9b-d3bd-47de-a34")[cite: 5]
-model_input = st.text_input("Gemini Model Name", value="gemini-3-flash-preview")[cite: 5]
+project_id_input = st.text_input("Vertex AI Project ID", value="project-d378ee9b-d3bd-47de-a34")
+model_input = st.text_input("Gemini Model Name", value="gemini-3-flash-preview")
 
 uploaded_file = st.file_uploader("Upload glossary.csv", type=["csv"])
 
 if uploaded_file:
-    input_dir = Path("input")
-    input_dir.mkdir(exist_ok=True)
-    
-    input_path = input_dir / "glossary.csv"
-    output_path = input_dir / "glossary_fixed.csv"
+    os.makedirs("input", exist_ok=True)
+    input_path = os.path.join("input", "glossary.csv")
     
     with open(input_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
@@ -148,16 +145,16 @@ if uploaded_file:
     st.success("Файл glossary.csv успешно загружен!")
 
 if st.button("Запустить исправление по Палладию"):
-    input_path = Path("input/glossary.csv")
-    output_path = Path("input/glossary_fixed.csv")
+    input_path = os.path.join("input", "glossary.csv")
+    output_path = os.path.join("input", "glossary_fixed.csv")
     
-    if not input_path.exists():
+    if not os.path.exists(input_path):
         st.error("Пожалуйста, сначала загрузите файл glossary.csv.")
     else:
         status_box = st.empty()
-        success = process_glossary_file(input_path, output_path, None, project_id_input, model_input, status_box)
+        success = process_glossary_file(input_path, output_path, project_id_input, model_input, status_box)
         
-        if success and output_path.exists():
+        if success and os.path.exists(output_path):
             with open(output_path, "rb") as fp:
                 st.download_button(
                     label="📦 Скачать исправленный глоссарий (glossary_fixed.csv)",
